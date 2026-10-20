@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B1220">
+<title>Digital Mine Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1220;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0;
+    background:var(--bg);
+    min-height:100vh;
+    padding: 24px 16px;
+  }
 
+  .oled-shell{
+    width:100%;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* ============ OLED (exact styling from project source) ============ */
+
+  .oled-bezel-label{
+    text-align:center;
+    color:#71849a;
+    font:700 10px/1 'IBM Plex Mono', monospace;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    margin:2px 0 10px;
+  }
+
+  .digital-oled{
+    position:relative;
+    background:#5ee879;
+    border:1px solid #2d425c;
+    border-radius:8px;
+    padding:20px 24px;
+    color:#071b0c;
+    font:700 14px/1.5 'IBM Plex Mono', monospace;
+    letter-spacing:.04em;
+    box-shadow:0 16px 38px -20px rgba(0,0,0,.95), inset 0 0 30px rgba(255,255,255,.16);
+    min-height:225px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    overflow:hidden;
+    transition:background .25s ease, color .25s ease, box-shadow .25s ease;
+  }
+
+  .digital-oled.safe{background:#5ee879; color:#071b0c;}
+  .digital-oled.warning{
+    background:#f4b84f; color:#351c00;
+    box-shadow:0 0 28px rgba(244,184,79,.38), inset 0 0 30px rgba(255,255,255,.12);
+    animation:oledWarningBlink 1.15s ease-in-out infinite;
+  }
+  .digital-oled.danger{
+    background:#ef5a4f; color:#3c0704;
+    box-shadow:0 0 38px rgba(239,90,79,.5), inset 0 0 30px rgba(255,255,255,.12);
+    animation:oledDangerBlink .55s ease-in-out infinite;
+  }
+
+  @keyframes oledWarningBlink{0%,100%{filter:brightness(1);} 50%{filter:brightness(.72);}}
+  @keyframes oledDangerBlink{0%,100%{filter:brightness(1);} 50%{filter:brightness(.62);}}
+
+  .digital-oled:before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.035) 0, rgba(0,0,0,.035) 1px, transparent 1px, transparent 4px);
+    pointer-events:none; opacity:.7;
+  }
+  .digital-oled:after{
+    content:""; position:absolute; inset:8px;
+    border:1px solid rgba(0,0,0,.12);
+    pointer-events:none;
+  }
+
+  .oled-title{
+    display:flex; justify-content:space-between;
+    color:inherit; font-weight:900;
+    padding-bottom:10px; margin-bottom:10px;
+    border-bottom:2px dashed rgba(7,27,12,.45);
+    gap:10px;
+  }
+  .oled-line{display:flex; justify-content:space-between; padding:4px 0; gap:15px;}
+  .oled-status{
+    margin-top:9px; padding-top:9px;
+    border-top:2px dashed rgba(7,27,12,.45);
+    font-weight:900; color:inherit;
+  }
+  .oled-status.safe{color:#073d14;}
+  .oled-status.warning{color:#6b3d00;}
+  .oled-status.danger{color:#6e0904;}
+
+  #oledConn.state-connecting{ opacity:0.6; }
+  #oledConn.state-offline{
+    animation: connBlink 1s infinite;
+  }
+  @keyframes connBlink{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.35; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .digital-oled{animation:none !important;}
+  }
+
+  @media (max-width:520px){
+    .oled-shell{width:100%;}
+    .digital-oled{padding:15px 13px; font-size:11px; min-height:205px; letter-spacing:.025em;}
+    .oled-title{font-size:10px; flex-wrap:wrap; gap:5px;}
+    .oled-line{padding:3px 0;}
+  }
+
+  @media (max-width:390px){
+    .digital-oled{font-size:10px; min-height:190px;}
+  }
+
+  .conn-note{
+    text-align:center;
+    color:#5a6b80;
+    font:500 11px 'IBM Plex Mono', monospace;
+    letter-spacing:.08em;
+    margin-top:12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="oled-shell">
+  <div class="oled-bezel-label">DIGITAL MINE MONITOR</div>
+
+  <div class="digital-oled safe" id="digitalOled">
+    <div class="oled-title">
+      <span>MINE SAFETY SYSTEM</span>
+      <span id="oledConn" class="state-offline">● OFFLINE</span>
+    </div>
+    <div class="oled-line"><span>Gas</span><span id="oledGas">-- ppm</span></div>
+    <div class="oled-line"><span>Temp</span><span id="oledTemp">-- C</span></div>
+    <div class="oled-line"><span>Fire</span><span id="oledFire">SAFE</span></div>
+    <div class="oled-line"><span>SOS</span><span id="oledSos">READY</span></div>
+    <div class="oled-status safe" id="oledStatus">STATUS: WAITING FOR DATA</div>
+  </div>
+
+  <div class="conn-note" id="connNote">connecting…</div>
+</div>
+
+<script>
+  // Update this URL if your backend uses a different path for viewer/dashboard clients.
+  const WS_URL = "wss://engineer-day-2026-backend.onrender.com/ws";
+
+  const oled       = document.getElementById('digitalOled');
+  const oledConn   = document.getElementById('oledConn');
+  const oledGas    = document.getElementById('oledGas');
+  const oledTemp   = document.getElementById('oledTemp');
+  const oledFire   = document.getElementById('oledFire');
+  const oledSos    = document.getElementById('oledSos');
+  const oledStatus = document.getElementById('oledStatus');
+  const connNote   = document.getElementById('connNote');
+
+  // ===== AUDIO ALERTS =====
+  let audioContext = null;
+  let audioUnlocked = false;
+  let warningTimer = null;
+  let dangerTimer = null;
+  let dangerOscillator = null;
+  let dangerGain = null;
+  let currentLevel = null; // tracks last played sound level, prevents restart spam
+
+  function unlockAudio(){
+    try{
+      if(!audioContext){
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioContext.state === "suspended"){
+        audioContext.resume();
+      }
+      audioUnlocked = true;
+    } catch(error){
+      console.log("Audio unavailable:", error);
+    }
+  }
+  // Browsers require a user gesture to start audio — unlock on first tap/click anywhere
+  document.addEventListener('click', unlockAudio, { once:true });
+  document.addEventListener('touchstart', unlockAudio, { once:true });
+
+  function playTone(frequency, duration, volume = .04, type = "sine"){
+    if(!audioContext) return;
+    try{
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+      gain.gain.setValueAtTime(0, audioContext.currentTime);
+      gain.gain.linearRampToValueAtTime(volume, audioContext.currentTime + .015);
+      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + duration);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + duration + .03);
+    } catch(error){
+      console.log("Tone error:", error);
+    }
+  }
+
+  function startWarningSound(){
+    stopAllSound();
+    if(!audioUnlocked) return;
+
+    playTone(920, .16, .055, "sine");
+    warningTimer = setInterval(() => { playTone(920, .16, .055, "sine"); }, 1450);
+  }
+
+  function startDangerSound(){
+    stopAllSound();
+    if(!audioUnlocked) return;
+
+    dangerOscillator = audioContext.createOscillator();
+    dangerGain = audioContext.createGain();
+
+    dangerOscillator.type = "sine";
+    dangerGain.gain.setValueAtTime(.07, audioContext.currentTime);
+
+    dangerOscillator.connect(dangerGain);
+    dangerGain.connect(audioContext.destination);
+    dangerOscillator.start();
+
+    const low = 480, high = 1100, sweepTime = 0.75;
+
+    function sweep(){
+      if(!dangerOscillator) return;
+      const now = audioContext.currentTime;
+      dangerOscillator.frequency.cancelScheduledValues(now);
+      dangerOscillator.frequency.setValueAtTime(low, now);
+      dangerOscillator.frequency.linearRampToValueAtTime(high, now + sweepTime);
+      dangerOscillator.frequency.linearRampToValueAtTime(low, now + sweepTime * 2);
+    }
+
+    sweep();
+    dangerTimer = setInterval(sweep, sweepTime * 2 * 1000);
+  }
+
+  function stopAllSound(){
+    if(warningTimer){ clearInterval(warningTimer); warningTimer = null; }
+    if(dangerTimer){ clearInterval(dangerTimer); dangerTimer = null; }
+
+    if(dangerOscillator){
+      try{ dangerOscillator.stop(); } catch(error){}
+      dangerOscillator.disconnect();
+      dangerOscillator = null;
+    }
+    if(dangerGain){
+      dangerGain.disconnect();
+      dangerGain = null;
+    }
+  }
+
+  function updateUI(data){
+    const gas     = Number(data.gas ?? 0);
+    const temp    = Number(data.temp ?? 0);
+    const fire    = !!Number(data.fire);
+    const sos     = !!Number(data.sos);
+    const warning = !!Number(data.warning);
+    const danger  = !!Number(data.danger);
+    const fan     = !!Number(data.fan);
+
+    oledGas.textContent  = `${gas} ppm`;
+    oledTemp.textContent = `${temp.toFixed(1)} C`;
+    oledFire.textContent = fire ? 'DETECTED' : 'SAFE';
+    oledSos.textContent  = sos ? 'EMERGENCY' : 'READY';
+
+    let level = 'safe';
+    let statusText = 'STATUS: SAFE';
+
+    if(sos){
+      level = 'danger';
+      statusText = 'STATUS: SOS! EMERGENCY';
+    } else if(danger){
+      level = 'danger';
+      statusText = 'STATUS: DANGER! EVACUATE';
+    } else if(warning){
+      level = 'warning';
+      statusText = fan ? 'STATUS: WARNING! FAN ON' : 'STATUS: WARNING!';
+    }
+
+    oled.classList.remove('safe','warning','danger');
+    oled.classList.add(level);
+
+    oledStatus.className = `oled-status ${level}`;
+    oledStatus.textContent = statusText;
+
+    if(level !== currentLevel){
+      stopAllSound();
+      if(level === 'danger') startDangerSound();
+      else if(level === 'warning') startWarningSound();
+      currentLevel = level;
+    }
+  }
+
+  let socket;
+
+  function connect(){
+    oledConn.textContent = '● CONNECTING';
+    oledConn.className = 'state-connecting';
+    connNote.textContent = 'connecting…';
+
+    socket = new WebSocket(WS_URL);
+
+    socket.onopen = () => {
+      oledConn.textContent = '● ONLINE';
+      oledConn.className = 'state-online';
+      connNote.textContent = 'live · sensor bridge';
+    };
+
+    socket.onmessage = (event) => {
+      try{
+        const data = JSON.parse(event.data);
+        updateUI(data);
+      }catch(err){ /* ignore malformed frame */ }
+    };
+
+    socket.onclose = () => {
+      oledConn.textContent = '● DISCONNECTED';
+      oledConn.className = 'state-offline';
+      connNote.textContent = 'disconnected — retrying in 4s';
+      setTimeout(connect, 4000);
+    };
+
+    socket.onerror = () => { socket.close(); };
+  }
+
+  connect();
+</script>
+</body>
+</html>
