@@ -21,9 +21,6 @@ Render FastAPI
     ▼
 Web Dashboard
 ```
-```
-https://drive.google.com/drive/folders/1Thhx-196MS_y5KyWBvx8XwMBEpddcZnx
-```
 ---
 ## server
 ```
@@ -74,7 +71,7 @@ The Arduino must transmit **one valid JSON object per line**:
 **1. Clone the repository and navigate to the project folder**
 
 ```bash
-git clone https://github.com/kvinitkarmkar/sensor-bridge
+git clone https://github.com/kvinitkarmkar/arduino-remote-display/sensor-bridge
 cd sensor-bridge
 ```
 
