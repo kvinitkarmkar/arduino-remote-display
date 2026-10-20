@@ -1,16 +1,17 @@
+## 🖥️ Preview
+
+<p align="center">
+  <img src="../docs/images/display.png" alt="Arduino Remote Display Dashboard" width="100%">
+</p>
+
 # Dashboard
 
 Web-based digital display for Arduino Remote Display, designed to visualize incoming sensor data through a custom interface.
 
 ## 🌐 Live Demo
 
-[**Open Live Dashboard →**](YOUR_LIVE_DISPLAY_URL)
+[**Open Live Dashboard →**]([YOUR_LIVE_DISPLAY_URL](https://arduino-uno-data.vercel.app/))
 
-## 🖥️ Preview
-
-<p align="center">
-  <img src="../docs/images/dashboard-preview.png" alt="Arduino Remote Display Dashboard" width="100%">
-</p>
 
 ## ✨ Features
 
