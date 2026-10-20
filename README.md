@@ -1,4 +1,6 @@
-# Arduino Remote Display
+<p align="center">
+  <img src="docs/images/dashboard-preview.png" alt="Arduino Remote Display — Digital Mine Monitor Dashboard" width="100%">
+</p>
 
 <p align="center">
   <b>Turn your browser into a remote display for Arduino.</b>
