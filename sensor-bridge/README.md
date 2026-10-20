@@ -24,7 +24,7 @@ Web Dashboard
 ---
 ## server
 ```
-https://engineer-day-2026-backend.onrender.com/
+https://YOUR-SERVICE.onrender.com/
 ```
 
 ## Responsibilities
@@ -72,7 +72,7 @@ The Arduino must transmit **one valid JSON object per line**:
 
 ```bash
 git clone https://github.com/kvinitkarmkar/arduino-remote-display/sensor-bridge
-cd sensor-bridge
+cd arduino-remote-display/sensor-bridge
 ```
 
 **2. Create and activate a virtual environment**
@@ -105,7 +105,7 @@ Create a `.env` file in the root directory:
 ```env
 ARDUINO_PORT=COM6
 BAUD_RATE=9600
-BACKEND_WS_URL=wss://engineer-day-2026-backend.onrender.com/ws
+BACKEND_WS_URL=wss://YOUR-SERVICE.onrender.com/ws
 SERIAL_TIMEOUT=1
 ```
 
@@ -128,7 +128,7 @@ python main.py
 ============================================================
 
 [SERIAL] Connected to Arduino on COM6 @ 9600 baud
-[WS] Connected to backend: wss://engineer-day-2026-backend.onrender.com/ws
+[WS] Connected to backend: wss://YOUR-SERVICE.onrender.com/ws
 [SYSTEM] Sensor bridge started.
 [SYSTEM] Waiting for Arduino data...
 
