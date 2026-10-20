@@ -131,13 +131,10 @@ Configure the WebSocket endpoint to match the running server.
 
 ```text
 arduino-remote-display/
-├── hardware/
-│   └── arduino-uno/
 ├── bridge/
 ├── server/
 ├── dashboard/
 ├── docs/
-├── examples/
 ├── README.md
 └── LICENSE
 ```
