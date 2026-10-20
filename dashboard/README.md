@@ -10,7 +10,7 @@ Web-based digital display for Arduino Remote Display, designed to visualize inco
 
 ## 🌐 Live Demo
 
-[**Open Live Dashboard →**]([YOUR_LIVE_DISPLAY_URL](https://arduino-uno-data.vercel.app/))
+[**Open Live Dashboard →**]((https://arduino-uno-data.vercel.app/))
 
 
 ## ✨ Features
